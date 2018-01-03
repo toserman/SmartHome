@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btn_start, btn_stop;
     UdpServerThread udpServerThread;
     private static final String TAG = "MY";//MainActivity.class.getName();
-    static final int UDP_PORT = 48655;
+    static final int UDP_PORT = 48656;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private class UdpServerThread extends Thread{
+    private class UdpServerThread extends Thread {
 
         int serverPort;
         DatagramSocket socket;
@@ -114,29 +115,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void run() {
 
             running = true;
-
+            Log.e(TAG, "RUN");
             try {
-                updateState("Starting UDP Server IP:" + getIpAddress() + " PORT:" + Integer.toString(this.serverPort));
-                socket = new DatagramSocket(serverPort);
+                updateState("Starting UDP Server IP:" + getIpAddress() + " PORT:" + Integer.toString(this.serverPort) + "\n");
 
-                Log.e(TAG, "UDP Server is running");
+//                socket = new DatagramSocket(serverPort);
+                if (socket == null) {
+                    socket = new DatagramSocket(null);
+                    socket.setReuseAddress(true);
+                    socket.setBroadcast(true);
+                    socket.bind(new InetSocketAddress(this.serverPort));
+                }
 
                 while(running){
                     byte[] buf = new byte[256];
-                    Log.e(TAG, "AAAAAAA");
 
                     // receive request
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     Log.e(TAG, "BEFORE RECEIVE !!");
                     socket.receive(packet);     //this code block the program flow
 
-
                     // send the response to the client at "address" and "port"
                     InetAddress address = packet.getAddress();
                     int port = packet.getPort();
 
                     Log.e(TAG, "RECEIVE PACKET : " + address);
-                    updatePrompt("Request from: " + address + ":" + port + "\n");
+                    String udp_data = new String(buf);
+                    updatePrompt("Request from: " + address + ":" + port + " " + udp_data +"\n");
 
                     String dString = new Date().toString() + "\n"
                             + "Your address " + address.toString() + ":" + String.valueOf(port);
