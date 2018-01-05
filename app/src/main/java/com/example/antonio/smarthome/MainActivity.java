@@ -27,7 +27,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView tview_log;
-    Button btn_start, btn_stop;
+    Button btn_start, btn_stop, btn_clear_textview;
     UdpServerThread udpServerThread;
     private static final String TAG = "MY";//MainActivity.class.getName();
     static final int UDP_PORT = 48656;
@@ -37,12 +37,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btn_start = (Button)findViewById(R.id.srv_start);
-        btn_stop = (Button)findViewById(R.id.srv_stop);
-        tview_log = (TextView)findViewById(R.id.output);
+        btn_start = findViewById(R.id.srv_start);
+        btn_stop = findViewById(R.id.srv_stop);
+        btn_clear_textview = findViewById(R.id.clear_textview);
+        tview_log = findViewById(R.id.output);
 
         btn_start.setOnClickListener(this);
         btn_stop.setOnClickListener(this);
+        btn_clear_textview.setOnClickListener(this);
 
        // tview_log.setText(getIpAddress()); /// CRASH !!!!!
        // tview_log.setText(Integer.toString(UDP_PORT));
@@ -57,6 +59,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.srv_stop:
                 Log.e(TAG,"Button: SERVER STOP");
                 break;
+            case R.id.clear_textview:
+                Log.e(TAG,"Button: CLEAR TextView");
+                tview_log.setText("");
+                              break;
+
         }
     }
 
@@ -182,11 +189,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (inetAddress.isSiteLocalAddress()) {
                         ip += inetAddress.getHostAddress() + "\n";
                     }
-
                 }
-
             }
-
         } catch (SocketException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

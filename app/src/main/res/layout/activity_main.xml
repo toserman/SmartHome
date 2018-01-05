@@ -16,7 +16,7 @@
         <TextView
             android:id="@+id/output"
             android:layout_width="match_parent"
-            android:layout_height="391dp"
+            android:layout_height="342dp"
             android:text="TextView" />
 
         <Button
@@ -30,5 +30,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="STOP SERVER" />
+
+        <Button
+            android:id="@+id/clear_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clear Text" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
