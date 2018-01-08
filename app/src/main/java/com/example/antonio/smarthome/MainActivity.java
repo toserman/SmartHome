@@ -6,29 +6,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Date;
 import java.util.Enumeration;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView tview_log;
     Button btn_start, btn_stop, btn_clear_textview;
-    UdpServerThread udpServerThread;
+    ServerUDPthread serverThread;
     private static final String TAG = "MY";//MainActivity.class.getName();
     static final int UDP_PORT = 48656;
 
@@ -46,132 +33,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_stop.setOnClickListener(this);
         btn_clear_textview.setOnClickListener(this);
 
-       // tview_log.setText(getIpAddress()); /// CRASH !!!!!
-       // tview_log.setText(Integer.toString(UDP_PORT));
-
     }
     public void onClick(View v){
         switch (v.getId()){
             case R.id.srv_start:
                 Log.e(TAG,"Button: SERVER START");
-                tview_log.setText(getIpAddress());
+                if (serverThread == null) {
+                    serverThread = new ServerUDPthread(UDP_PORT, MainActivity.this);
+                    serverThread.setRunning(true);
+                    serverThread.start();
+                    tview_log.setText("SERVER STARTED");
+                }
+                //tview_log.setText(getIpAddress());
                 break;
             case R.id.srv_stop:
+                //TODO: Need debug for good STOP
                 Log.e(TAG,"Button: SERVER STOP");
+                if(serverThread != null){
+                    serverThread.setRunning(false);
+                    serverThread.interrupt();
+                    serverThread = null;
+                    tview_log.setText("SERVER STOPPED");
+                }
                 break;
             case R.id.clear_textview:
                 Log.e(TAG,"Button: CLEAR TextView");
                 tview_log.setText("");
-                              break;
-
+                break;
         }
     }
 
 //    @Override
     protected void onStart() {
-        udpServerThread = new UdpServerThread(UDP_PORT);
-        udpServerThread.start();
+        serverThread = new ServerUDPthread(UDP_PORT,MainActivity.this);
+        serverThread.setRunning(true);
+        serverThread.start();
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-        if(udpServerThread != null){
-            udpServerThread.setRunning(false);
-            udpServerThread = null;
-        }
+          if(serverThread != null){
+            serverThread.setRunning(false);
+            serverThread = null;
+          }
         super.onStop();
     }
 
-    private void updateState(final String state){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tview_log.setText(state);
-            }
-        });
-    }
-
-    private void updatePrompt(final String prompt){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tview_log.append(prompt);
-            }
-        });
-    }
-
-
-    private class UdpServerThread extends Thread {
-
-        int serverPort;
-        DatagramSocket socket;
-
-        boolean running;
-
-        public UdpServerThread(int serverPort) {
-            super();
-            this.serverPort = serverPort;
-        }
-
-        public void setRunning(boolean running){
-            this.running = running;
-        }
-
-        @Override
-        public void run() {
-
-            running = true;
-            Log.e(TAG, "RUN");
-            try {
-                updateState("Starting UDP Server IP:" + getIpAddress() + " PORT:" + Integer.toString(this.serverPort) + "\n");
-
-//                socket = new DatagramSocket(serverPort);
-                if (socket == null) {
-                    socket = new DatagramSocket(null);
-                    socket.setReuseAddress(true);
-                    socket.setBroadcast(true);
-                    socket.bind(new InetSocketAddress(this.serverPort));
-                }
-
-                while(running){
-                    byte[] buf = new byte[256];
-
-                    // receive request
-                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                    Log.e(TAG, "BEFORE RECEIVE !!");
-                    socket.receive(packet);     //this code block the program flow
-
-                    // send the response to the client at "address" and "port"
-                    InetAddress address = packet.getAddress();
-                    int port = packet.getPort();
-
-                    Log.e(TAG, "RECEIVE PACKET : " + address);
-                    String udp_data = new String(buf);
-                    updatePrompt("Request from: " + address + ":" + port + " " + udp_data +"\n");
-
-                    String dString = new Date().toString() + "\n"
-                            + "Your address " + address.toString() + ":" + String.valueOf(port);
-                    buf = dString.getBytes();
-                    packet = new DatagramPacket(buf, buf.length, address, port);
-                    socket.send(packet);
-
-                }
-
-                Log.e(TAG, "UDP Server ended");
-
-            } catch (SocketException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if(socket != null){
-                    socket.close();
-                    Log.e(TAG, "socket.close()");
-                }
-            }
-        }
-    }
 
     private String getIpAddress() {
         String ip = "";
