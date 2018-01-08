@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
     tools:context="com.example.antonio.smarthome.MainActivity">
 
     <LinearLayout
@@ -17,7 +18,8 @@
             android:id="@+id/output"
             android:layout_width="match_parent"
             android:layout_height="342dp"
-            android:text="TextView" />
+            android:background="@android:color/background_dark"
+            android:textColor="?android:attr/colorPressedHighlight" />
 
         <Button
             android:id="@+id/srv_start"
