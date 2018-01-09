@@ -2,6 +2,7 @@ package com.example.antonio.smarthome;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,16 +29,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_stop = findViewById(R.id.srv_stop);
         btn_clear_textview = findViewById(R.id.clear_textview);
         tview_log = findViewById(R.id.output);
+        tview_log.setMovementMethod(new ScrollingMovementMethod());
 
         btn_start.setOnClickListener(this);
         btn_stop.setOnClickListener(this);
         btn_clear_textview.setOnClickListener(this);
+
 
     }
     public void onClick(View v){
         switch (v.getId()){
             case R.id.srv_start:
                 Log.e(TAG,"Button: SERVER START");
+                tview_log.setText("SERVER STARTED IP:" + getIpAddress());
                 if (serverThread == null) {
                     serverThread = new ServerUDPthread(UDP_PORT, MainActivity.this);
                     serverThread.setRunning(true);
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         serverThread = new ServerUDPthread(UDP_PORT,MainActivity.this);
         serverThread.setRunning(true);
         serverThread.start();
+        tview_log.setText("SERVER STARTED IP:" + getIpAddress());
         super.onStart();
     }
 
@@ -79,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           }
         super.onStop();
     }
-
 
     private String getIpAddress() {
         String ip = "";
