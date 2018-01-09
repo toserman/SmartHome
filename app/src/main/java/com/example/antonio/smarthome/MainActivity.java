@@ -1,5 +1,7 @@
 package com.example.antonio.smarthome;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -7,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -19,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ServerUDPthread serverThread;
     private static final String TAG = "MY";//MainActivity.class.getName();
     static final int UDP_PORT = 48656;
+    public Handler hdThread; //Handler for receiving msg from Server Thread
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +40,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_stop.setOnClickListener(this);
         btn_clear_textview.setOnClickListener(this);
 
+        //TODO: CAN BE LEAKAGE !! INVESTIGATE !!!
+        hdThread = new Handler() {
+            public void handleMessage(Message msg) {
+                final String msgRcv = (String)msg.obj;
+                Log.e("TAG","RECEIVE MESSAGE FROM THREAD :" + msgRcv);
+                super.handleMessage(msg);
+            }
+        };
 
-    }
+     }
+
     public void onClick(View v){
         switch (v.getId()){
             case R.id.srv_start:
                 Log.e(TAG,"Button: SERVER START");
                 tview_log.setText("SERVER STARTED IP:" + getIpAddress());
                 if (serverThread == null) {
-                    serverThread = new ServerUDPthread(UDP_PORT, MainActivity.this);
+                    serverThread = new ServerUDPthread(UDP_PORT, MainActivity.this,hdThread);
                     serverThread.setRunning(true);
                     serverThread.start();
                     tview_log.setText("SERVER STARTED");
@@ -69,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //    @Override
     protected void onStart() {
-        serverThread = new ServerUDPthread(UDP_PORT,MainActivity.this);
+        serverThread = new ServerUDPthread(UDP_PORT,MainActivity.this,hdThread);
         serverThread.setRunning(true);
         serverThread.start();
         tview_log.setText("SERVER STARTED IP:" + getIpAddress());

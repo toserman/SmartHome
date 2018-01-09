@@ -2,7 +2,9 @@ package com.example.antonio.smarthome;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -28,10 +30,12 @@ public class ServerUDPthread extends Thread {
     volatile boolean run_flag;
     TextView txt_output;
     Context context;
+    Handler hd;
 
-    public ServerUDPthread (int port, Context con){
+    public ServerUDPthread (int port, Context con, Handler inpHd){
         this.context = con;
         this.srv_port = port;
+        this.hd = inpHd;
     }
 
     public void setRunning(boolean flag) {
@@ -73,9 +77,12 @@ public class ServerUDPthread extends Thread {
 
                         String udp_data = new String(buf,0,packet.getLength());
                         Log.e(TAG,"DATA:" + udp_data);
+                        Message msg = hd.obtainMessage();
+                        msg.obj = udp_data;
+                        hd.sendMessage(msg);
+
                         Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
                         String output = new String("Request from: " + strIPaddress + ":" + port + " " + udp_data);
-
                         updateOutput(output + "\n");
                     }
             } catch (SocketException e) {
