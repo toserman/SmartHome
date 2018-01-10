@@ -77,13 +77,16 @@ public class ServerUDPthread extends Thread {
 
                         String udp_data = new String(buf,0,packet.getLength());
                         Log.e(TAG,"DATA:" + udp_data);
+                        /* For sending message to MainActivity */
                         Message msg = hd.obtainMessage();
                         msg.obj = udp_data;
                         hd.sendMessage(msg);
 
                         Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
                         String output = new String("Request from: " + strIPaddress + ":" + port + " " + udp_data);
+                        new ActionTask().execute(udp_data);
                         updateOutput(output + "\n");
+
                     }
             } catch (SocketException e) {
                 e.printStackTrace();

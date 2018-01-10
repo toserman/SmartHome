@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tview_log;
     Button btn_start, btn_stop, btn_clear_textview;
     ServerUDPthread serverThread;
-    private static final String TAG = "MY";//MainActivity.class.getName();
+    private final String TAG = "MY";//;//MainActivity.class.getName();
     static final int UDP_PORT = 48656;
     public Handler hdThread; //Handler for receiving msg from Server Thread
 
