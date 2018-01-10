@@ -20,28 +20,6 @@ import java.io.IOException;
 public class ActionTask extends AsyncTask<String, Void, Integer> {
 
     protected Integer doInBackground(String... str) {
-//        //IMPORTANT !!! NEED TO USE NO1 and COM1. CLOSET RED LED VALUE = TRUE
-//                String GPIO_PIN_NAME = "BCM17"; // Physical Pin #11 on Raspberry Pi3
-//        Gpio mRelayGpio;
-//        PeripheralManagerService service = new PeripheralManagerService();
-//        try {
-//            mRelayGpio = service.openGpio(GPIO_PIN_NAME);
-//            mRelayGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-//            SystemClock.sleep(5000);
-//            mRelayGpio.setValue(TRUE);
-//            SystemClock.sleep(2000);
-//            mRelayGpio.setValue(FALSE);
-//            SystemClock.sleep(2000);
-//            mRelayGpio.setValue(TRUE);
-//
-//            mRelayGpio.close();//NEED FOR NEXT LOO
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
-
-
         Log.d(TAG,"ActionTask doInBackground String = " + str[0]);
         if(str[0].equals("TurnOn")) {
             Log.d(TAG, "ActionTask doInBackground STRING EQUALS ");
