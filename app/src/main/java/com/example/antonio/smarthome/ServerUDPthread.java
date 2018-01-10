@@ -5,8 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.google.android.things.pio.Gpio;
+import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static android.content.ContentValues.TAG;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 /**
  * Created by toserman on 1/6/18.
