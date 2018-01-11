@@ -43,13 +43,8 @@ public class ActionTask extends AsyncTask<String, Void, Integer> {
         try {
             mRelayGpio = service.openGpio(GPIO_PIN_NAME);
             mRelayGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-            SystemClock.sleep(7000);
+            SystemClock.sleep(1000);
             mRelayGpio.setValue(TRUE);
-            SystemClock.sleep(2000);
-            mRelayGpio.setValue(FALSE);
-            SystemClock.sleep(2000);
-            mRelayGpio.setValue(TRUE);
-
             mRelayGpio.close();//NEED FOR NEXT LOOP
         } catch (IOException e) {
             e.printStackTrace();
