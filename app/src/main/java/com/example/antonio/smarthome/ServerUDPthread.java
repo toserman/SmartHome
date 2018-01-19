@@ -2,28 +2,18 @@ package com.example.antonio.smarthome;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.TextView;
-
-import com.google.android.things.pio.Gpio;
-import com.google.android.things.pio.PeripheralManagerService;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import static android.content.ContentValues.TAG;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 /**
  * Created by toserman on 1/6/18.
@@ -88,6 +78,14 @@ public class ServerUDPthread extends Thread {
                         msg.obj = udp_data;
                         hd.sendMessage(msg);
 
+                        //////////////////////////////
+                        if(udp_data.equals("TestPacket")) {
+                            int test_port = 48656;
+                            Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
+                                             + Integer.toString(test_port) + " Destination IP " + strIPaddress);
+                            new SendUDPdata(strIPaddress,test_port,"HELLO SERVER").execute();
+                        }
+                        //////////////////////////////
                         Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
                         String output = new String("Request from: " + strIPaddress + ":" + port + " " + udp_data);
                         new ActionTask().execute(udp_data);

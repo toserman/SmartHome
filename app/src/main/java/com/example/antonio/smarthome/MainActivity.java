@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         serverThread = new ServerUDPthread(UDP_PORT,MainActivity.this,hdThread);
         serverThread.setRunning(true);
         serverThread.start();
-        tview_log.setText("SERVER STARTED IP:" + getIpAddress());
+        tview_log.setText("SERVER STARTED IP:" + getIpAddress() + " PORT: " + UDP_PORT);
         super.onStart();
     }
 
