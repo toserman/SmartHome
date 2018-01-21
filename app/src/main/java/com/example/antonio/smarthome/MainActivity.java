@@ -98,7 +98,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           }
         super.onStop();
     }
-
+    @Override
+    protected void onResume() {
+        Log.e("TAG", "STATE onResume" );
+        super.onResume();
+    }
     private String getIpAddress() {
         String ip = "";
         try {

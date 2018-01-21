@@ -83,7 +83,31 @@ public class ServerUDPthread extends Thread {
                             int test_port = 48656;
                             Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
                                              + Integer.toString(test_port) + " Destination IP " + strIPaddress);
-                            new SendUDPdata(strIPaddress,test_port,"HELLO SERVER").execute();
+
+//                            try {
+//                                DatagramPacket dp = null;
+//                                 DatagramSocket DgrmSocket;
+//                                InetAddress IPAddress = InetAddress.getByName("192.168.0.107");
+//                                Log.d("MY: ", "Send to " + IPAddress + " Command: " + udp_data );
+//                                dp = new DatagramPacket(udp_data.getBytes(),
+//                                                         udp_data.length(), IPAddress,test_port);
+//
+//                                DgrmSocket = new DatagramSocket(null);
+//                                DgrmSocket.setReuseAddress(true);
+//                                DgrmSocket.setBroadcast(true);
+//                                DgrmSocket.bind(new InetSocketAddress(48655));
+//
+//                                DgrmSocket.send(dp);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+                            try {
+                                new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            updateOutput("SEND RESPONSE" + "\n");
+                            Log.e(TAG, "Send PACKEET end : " + "\n");
                         }
                         //////////////////////////////
                         Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
