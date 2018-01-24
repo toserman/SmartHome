@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         serverThread = new ServerUDPthread(UDP_PORT,MainActivity.this,hdThread);
         serverThread.setRunning(true);
         serverThread.start();
-        tview_log.setText("SERVER STARTED IP:" + getIpAddress() + " PORT: " + UDP_PORT);
+        tview_log.setText("SERVER STARTED IP:" + getIpAddress() + " PORT: " + UDP_PORT + "\n");
         super.onStart();
     }
 
@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.e("TAG", "STATE onResume" );
         super.onResume();
     }
+
     private String getIpAddress() {
         String ip = "";
         try {
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     InetAddress inetAddress = enumInetAddress.nextElement();
 
                     if (inetAddress.isSiteLocalAddress()) {
-                        ip += inetAddress.getHostAddress() + "\n";
+                        ip += inetAddress.getHostAddress();
                     }
                 }
             }

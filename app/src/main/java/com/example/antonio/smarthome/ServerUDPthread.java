@@ -6,7 +6,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -58,7 +61,7 @@ public class ServerUDPthread extends Thread {
                     socket.setBroadcast(true);
                     socket.bind(new InetSocketAddress(this.srv_port));
                 }
-                    Log.e(TAG, "RUN FLAG = " + Boolean.toString(run_flag) + " PORT: " +srv_port);
+                    Log.e(TAG, "RUN FLAG = " + Boolean.toString(run_flag) + " PORT: " + srv_port);
                     while(this.run_flag) {
                         byte[] buf = new byte[UDP_SIZE];
                         // receive request
@@ -78,43 +81,31 @@ public class ServerUDPthread extends Thread {
                         msg.obj = udp_data;
                         hd.sendMessage(msg);
 
+                        Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
+                        String output = "Request from: " + strIPaddress + ":" + port + " Data:" + udp_data;
+                        updateOutput(output + "\n");//Update TextView in UI
                         //////////////////////////////
                         if(udp_data.equals("TestPacket")) {
                             int test_port = 48656;
+                            String sendMsg = " HELLO SERVER";
                             Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
                                              + Integer.toString(test_port) + " Destination IP " + strIPaddress);
 
-//                            try {
-//                                DatagramPacket dp = null;
-//                                 DatagramSocket DgrmSocket;
-//                                InetAddress IPAddress = InetAddress.getByName("192.168.0.107");
-//                                Log.d("MY: ", "Send to " + IPAddress + " Command: " + udp_data );
-//                                dp = new DatagramPacket(udp_data.getBytes(),
-//                                                         udp_data.length(), IPAddress,test_port);
-//
-//                                DgrmSocket = new DatagramSocket(null);
-//                                DgrmSocket.setReuseAddress(true);
-//                                DgrmSocket.setBroadcast(true);
-//                                DgrmSocket.bind(new InetSocketAddress(48655));
-//
-//                                DgrmSocket.send(dp);
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
+                            String HOME_PC_IP= "192.168.0.102"; //Home PC
+                            //sendMsg = ping(strIPaddress); //Check connection
+                            sendMsg = ping(HOME_PC_IP); //Check connection
+
                             try {
-                                new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
+                                //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
+                                new SendUDPdata(strIPaddress, test_port, sendMsg).execute();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            updateOutput("SEND RESPONSE" + "\n");
-                            Log.e(TAG, "Send PACKEET end : " + "\n");
+                            updateOutput("Send Response to " + strIPaddress + ":" + port + sendMsg + "\n");
                         }
                         //////////////////////////////
-                        Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
-                        String output = new String("Request from: " + strIPaddress + ":" + port + " " + udp_data);
+                        /* Handle request*/
                         new ActionTask().execute(udp_data);
-                        updateOutput(output + "\n");
-
                     }
             } catch (SocketException e) {
                 e.printStackTrace();
@@ -128,4 +119,41 @@ public class ServerUDPthread extends Thread {
             }
     }
 
+
+
+    public String ping(String url) {
+        String str = "";
+        int pktCount = 3;
+        int rcvEchoPkt = 0;
+        try {
+            Process process = Runtime.getRuntime().exec(
+                    "/system/bin/ping -c " + Integer.toString(pktCount) + " " + url);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            int i;
+            char[] buffer = new char[4096];
+            StringBuffer output = new StringBuffer();
+            while ((i = reader.read(buffer)) > 0) {
+                output.append(buffer, 0, i);
+                rcvEchoPkt++;
+            }
+            reader.close();
+
+            Log.d(TAG, "MY rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
+
+            if (rcvEchoPkt == pktCount) {
+                Log.d(TAG, "MY GOOD rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
+                str = "DEVICE IS ON LINE!!!";
+            } else {
+                str = "DEVICE IS OFF LINE!!!";
+            }
+
+            // body.append(output.toString()+"\n");
+            String out_str = output.toString();
+            Log.d(TAG, "MY:" + out_str);
+        } catch (IOException e) {
+            // body.append("Error\n");
+            e.printStackTrace();
+        }
+        return str;
+    }
 }
