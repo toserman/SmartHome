@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ServerUDPthread serverThread;
     private final String TAG = "MY";//;//MainActivity.class.getName();
     static final int UDP_PORT = 48656;
+    static final int CLIENT_SRV_PORT = 48656;
     public Handler hdThread; //Handler for receiving msg from Server Thread
 
     @Override

@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.StringDef;
 import android.util.Log;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -17,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 import static android.content.ContentValues.TAG;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * Created by toserman on 1/6/18.
@@ -30,6 +33,18 @@ public class ServerUDPthread extends Thread {
     TextView txt_output;
     Context context;
     Handler hd;
+
+    //TODO: MOVE ENUM to MainActivity
+    @Retention(SOURCE)
+    @StringDef({
+            TURN_ON,
+            TURN_OFF,
+            TEST
+    })
+    public @interface CommandName {};
+    public static final String TURN_ON = "TurnOn";
+    public static final String TURN_OFF = "TurnOff";
+    public static final String TEST = "TestPacket";
 
     public ServerUDPthread (int port, Context con, Handler inpHd){
         this.context = con;
@@ -85,27 +100,55 @@ public class ServerUDPthread extends Thread {
                         String output = "Request from: " + strIPaddress + ":" + port + " Data:" + udp_data;
                         updateOutput(output + "\n");//Update TextView in UI
                         //////////////////////////////
-                        if(udp_data.equals("TestPacket")) {
-                            int test_port = 48656;
-                            String sendMsg = " HELLO SERVER";
-                            Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
-                                             + Integer.toString(test_port) + " Destination IP " + strIPaddress);
+//                        if(udp_data.equals("TestPacket")) {
+//                            int test_port = 48656;
+//                            String sendMsg = " ";
+//                            Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
+//                                             + Integer.toString(test_port) + " Destination IP " + strIPaddress);
+//
+//                            sendMsg = CheckDeviceAvailability(strIPaddress); //Check connection
+//                            //String HOME_PC_IP= "192.168.0.102"; //Home PC
+//                           // sendMsg = CheckDeviceAvailability(HOME_PC_IP); //Check connection
+//
+//                            try {
+//                                //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
+//                                new SendUDPdata(strIPaddress, test_port, sendMsg).execute();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                            updateOutput("Send Response to " + strIPaddress + ":" + port + " " + sendMsg + "\n");
+//                        }
+//                                                /* Handle request*/
+//                        new ActionTask().execute(udp_data);
 
-                            String HOME_PC_IP= "192.168.0.102"; //Home PC
-                            //sendMsg = ping(strIPaddress); //Check connection
-                            sendMsg = ping(HOME_PC_IP); //Check connection
+                        String strStatus, strAsynCommand;
+                        Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
+                                + Integer.toString(MainActivity.CLIENT_SRV_PORT) + " Destination IP " + strIPaddress);
 
-                            try {
-                                //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
-                                new SendUDPdata(strIPaddress, test_port, sendMsg).execute();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            updateOutput("Send Response to " + strIPaddress + ":" + port + sendMsg + "\n");
+                        //String HOME_PC_IP= "192.168.0.102"; //Home PC
+                        // sendMsg = CheckDeviceAvailability(HOME_PC_IP); //Check connection
+                        strStatus = CheckDeviceAvailability(strIPaddress); //Check connection
+                        if (strStatus.equals(udp_data)) {
+                            Log.e(TAG, "EQUALS Connection strStatus:" + strStatus + " Recieved udp_data " + udp_data);
+                            strAsynCommand = "DO_NOTHING";
+                        } else {
+                            strAsynCommand = udp_data;
                         }
+
+
+                        Log.e(TAG, "BEFORE AsynTask : " + strAsynCommand);
+
+
                         //////////////////////////////
                         /* Handle request*/
-                        new ActionTask().execute(udp_data);
+                        new ActionTask().execute(strAsynCommand);
+                        //TODO: MOVE TO AsynTask
+                        try {
+                            //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
+                            new SendUDPdata(strIPaddress, MainActivity.CLIENT_SRV_PORT, strAsynCommand + " AAAAA").execute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
             } catch (SocketException e) {
                 e.printStackTrace();
@@ -120,14 +163,13 @@ public class ServerUDPthread extends Thread {
     }
 
 
-
-    public String ping(String url) {
+    public String CheckDeviceAvailability(String strIpAdrees) {
         String str = "";
-        int pktCount = 3;
+        int pktCount = 2;
         int rcvEchoPkt = 0;
         try {
             Process process = Runtime.getRuntime().exec(
-                    "/system/bin/ping -c " + Integer.toString(pktCount) + " " + url);
+                    "/system/bin/ping -c " + Integer.toString(pktCount) + " " + strIpAdrees);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             int i;
             char[] buffer = new char[4096];
@@ -142,9 +184,9 @@ public class ServerUDPthread extends Thread {
 
             if (rcvEchoPkt == pktCount) {
                 Log.d(TAG, "MY GOOD rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
-                str = "DEVICE IS ON LINE!!!";
+                str = TURN_ON;
             } else {
-                str = "DEVICE IS OFF LINE!!!";
+                str = TURN_OFF;
             }
 
             // body.append(output.toString()+"\n");

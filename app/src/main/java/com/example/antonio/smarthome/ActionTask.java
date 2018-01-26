@@ -21,9 +21,14 @@ public class ActionTask extends AsyncTask<String, Void, Integer> {
 
     protected Integer doInBackground(String... str) {
         Log.d(TAG,"ActionTask doInBackground String = " + str[0]);
+        //Log.d(TAG,"ActionTask doInBackground String 1 = " + str[1]);
         if(str[0].equals("TurnOn")) {
             Log.d(TAG, "ActionTask doInBackground STRING EQUALS ");
             turnOnPC();
+        }
+        if(str[0].equals("TurnOff")) {
+            Log.d(TAG, "ActionTask TurnOff PC ");
+            turnOffPC();
         }
         return 100;
     }
@@ -31,7 +36,13 @@ public class ActionTask extends AsyncTask<String, Void, Integer> {
     protected void onPostExecute(Integer result) {
         super.onPostExecute(result);
         Log.d("MY","ActionTask WAS FINISHED result = " + result.toString());
+    }
 
+
+    public void turnOffPC() {
+        String HOME_PC_IP= "192.168.0.102"; //Home PC
+        new SendUDPdata(HOME_PC_IP,MainActivity.UDP_PORT,"TurnOff").execute();
+        Log.e(TAG, "Packet TurnOff PC was sent to " + HOME_PC_IP);
     }
 
     public void turnOnPC() {
