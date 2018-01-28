@@ -125,9 +125,9 @@ public class ServerUDPthread extends Thread {
                         Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
                                 + Integer.toString(MainActivity.CLIENT_SRV_PORT) + " Destination IP " + strIPaddress);
 
-                        //String HOME_PC_IP= "192.168.0.102"; //Home PC
-                        // sendMsg = CheckDeviceAvailability(HOME_PC_IP); //Check connection
-                        strStatus = CheckDeviceAvailability(strIPaddress); //Check connection
+                        String HOME_PC_IP= "192.168.0.102"; //Home PC
+                        strStatus = CheckDeviceAvailability(HOME_PC_IP); //Check connection
+                        //strStatus = CheckDeviceAvailability(strIPaddress); //Check connection
                         if (strStatus.equals(udp_data)) {
                             Log.e(TAG, "EQUALS Connection strStatus:" + strStatus + " Recieved udp_data " + udp_data);
                             strAsynCommand = "DO_NOTHING";
@@ -135,9 +135,7 @@ public class ServerUDPthread extends Thread {
                             strAsynCommand = udp_data;
                         }
 
-
                         Log.e(TAG, "BEFORE AsynTask : " + strAsynCommand);
-
 
                         //////////////////////////////
                         /* Handle request*/
@@ -145,7 +143,7 @@ public class ServerUDPthread extends Thread {
                         //TODO: MOVE TO AsynTask
                         try {
                             //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
-                            new SendUDPdata(strIPaddress, MainActivity.CLIENT_SRV_PORT, strAsynCommand + " AAAAA").execute();
+                            new SendUDPdata(strIPaddress, MainActivity.CLIENT_SRV_PORT, strAsynCommand).execute();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
