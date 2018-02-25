@@ -99,30 +99,9 @@ public class ServerUDPthread extends Thread {
                         Log.e(TAG, "RECEIVE PACKET : " + strIPaddress + ":" + port + " " + udp_data);
                         String output = "Request from: " + strIPaddress + ":" + port + " Data:" + udp_data;
                         updateOutput(output + "\n");//Update TextView in UI
-                        //////////////////////////////
-//                        if(udp_data.equals("TestPacket")) {
-//                            int test_port = 48656;
-//                            String sendMsg = " ";
-//                            Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
-//                                             + Integer.toString(test_port) + " Destination IP " + strIPaddress);
-//
-//                            sendMsg = CheckDeviceAvailability(strIPaddress); //Check connection
-//                            //String HOME_PC_IP= "192.168.0.102"; //Home PC
-//                           // sendMsg = CheckDeviceAvailability(HOME_PC_IP); //Check connection
-//
-//                            try {
-//                                //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
-//                                new SendUDPdata(strIPaddress, test_port, sendMsg).execute();
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                            updateOutput("Send Response to " + strIPaddress + ":" + port + " " + sendMsg + "\n");
-//                        }
-//                                                /* Handle request*/
-//                        new ActionTask().execute(udp_data);
 
                         String strStatus, strAsynCommand;
-                        Log.e(TAG, " Received TestPacket SEND UDP PACKAGE BACK test_port = "
+                        Log.e(TAG, " Received TestPacket SEND UDP PACKET BACK test_port = "
                                 + Integer.toString(MainActivity.CLIENT_SRV_PORT) + " Destination IP " + strIPaddress);
 
                         String HOME_PC_IP= "192.168.0.102"; //Home PC
@@ -130,7 +109,8 @@ public class ServerUDPthread extends Thread {
                         //strStatus = CheckDeviceAvailability(strIPaddress); //Check connection
                         if (strStatus.equals(udp_data)) {
                             Log.e(TAG, "EQUALS Connection strStatus:" + strStatus + " Recieved udp_data " + udp_data);
-                            strAsynCommand = "DO_NOTHING";
+                            //strAsynCommand = "DO_NOTHING";
+                            strAsynCommand = "PC is already " + udp_data;
                         } else {
                             strAsynCommand = udp_data;
                         }
@@ -180,7 +160,7 @@ public class ServerUDPthread extends Thread {
 
             Log.d(TAG, "MY rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
 
-            if (rcvEchoPkt == pktCount) {
+            if (rcvEchoPkt != 0) {
                 Log.d(TAG, "MY GOOD rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
                 str = TURN_ON;
             } else {
