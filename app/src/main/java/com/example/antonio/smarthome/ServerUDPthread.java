@@ -33,6 +33,7 @@ public class ServerUDPthread extends Thread {
     TextView txt_output;
     Context context;
     Handler hd;
+    public static final String TAG = "ServerUDPthread";
 
     //TODO: MOVE ENUM to MainActivity
     @Retention(SOURCE)
@@ -149,27 +150,28 @@ public class ServerUDPthread extends Thread {
             Process process = Runtime.getRuntime().exec(
                     "/system/bin/ping -c " + Integer.toString(pktCount) + " " + strIpAdrees);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            int i;
+            int i,indxTTL;
             char[] buffer = new char[4096];
             StringBuffer output = new StringBuffer();
             while ((i = reader.read(buffer)) > 0) {
                 output.append(buffer, 0, i);
-                rcvEchoPkt++;
+                indxTTL = output.indexOf("ttl=");
+                Log.e(TAG, "MY indxTTL = " + Integer.toString(indxTTL));
+                if (indxTTL != -1 ) {
+                    rcvEchoPkt++;
+                }
             }
             reader.close();
 
-            Log.d(TAG, "MY rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
+            Log.e(TAG, "MY rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
 
             if (rcvEchoPkt != 0) {
-                Log.d(TAG, "MY GOOD rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
+                Log.d(TAG, "MY rcvEchoPkt: " + Integer.toString(rcvEchoPkt));
                 str = TURN_ON;
             } else {
+                Log.e(TAG, "MY rcvEchoPkt = 0 NO PING Send TURN_OFF ");
                 str = TURN_OFF;
             }
-
-            // body.append(output.toString()+"\n");
-            String out_str = output.toString();
-            Log.d(TAG, "MY:" + out_str);
         } catch (IOException e) {
             // body.append("Error\n");
             e.printStackTrace();

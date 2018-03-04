@@ -18,7 +18,7 @@ import java.io.IOException;
  */
 //new SendUDPdata(SERVER_IP,PORT,getCommandName()).execute();
 public class ActionTask extends AsyncTask<String, Void, Integer> {
-
+    public static final String TAG = "ActionTask";
     protected Integer doInBackground(String... str) {
         Log.d(TAG,"ActionTask doInBackground String = " + str[0]);
         //Log.d(TAG,"ActionTask doInBackground String 1 = " + str[1]);
