@@ -45,6 +45,7 @@ public class ServerUDPthread extends Thread {
     public @interface CommandName {};
     public static final String TURN_ON = "TurnOn";
     public static final String TURN_OFF = "TurnOff";
+    public static final String CHECK_CONNECTION = "CheckConnection";
     public static final String TEST = "TestPacket";
 
     public ServerUDPthread (int port, Context con, Handler inpHd){
@@ -82,7 +83,7 @@ public class ServerUDPthread extends Thread {
                         byte[] buf = new byte[UDP_SIZE];
                         // receive request
                         DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                        Log.e(TAG, "BEFORE RECEIVE !!");
+                        Log.e(TAG, "WAIT PACKET !!");
                         socket.receive(packet); //this code block the program flow
 
                         InetAddress address = packet.getAddress();
@@ -107,6 +108,7 @@ public class ServerUDPthread extends Thread {
 
                         String HOME_PC_IP= "192.168.0.102"; //Home PC
                         strStatus = CheckDeviceAvailability(HOME_PC_IP); //Check connection
+
                         //strStatus = CheckDeviceAvailability(strIPaddress); //Check connection
                         if (strStatus.equals(udp_data)) {
                             Log.e(TAG, "EQUALS Connection strStatus:" + strStatus + " Recieved udp_data " + udp_data);
@@ -114,6 +116,11 @@ public class ServerUDPthread extends Thread {
                             strAsynCommand = "PC is already " + udp_data;
                         } else {
                             strAsynCommand = udp_data;
+                        }
+
+                        if (udp_data.equals(CHECK_CONNECTION)) {
+                            Log.e(TAG, "UDP == CHECK_CONNECTION:" + udp_data + " strStatus:" + strStatus);
+                            strAsynCommand = CHECK_CONNECTION + ":" + strStatus;
                         }
 
                         Log.e(TAG, "BEFORE AsynTask : " + strAsynCommand);
@@ -156,7 +163,7 @@ public class ServerUDPthread extends Thread {
             while ((i = reader.read(buffer)) > 0) {
                 output.append(buffer, 0, i);
                 indxTTL = output.indexOf("ttl=");
-                Log.e(TAG, "MY indxTTL = " + Integer.toString(indxTTL));
+//                Log.e(TAG, "MY indxTTL = " + Integer.toString(indxTTL));
                 if (indxTTL != -1 ) {
                     rcvEchoPkt++;
                 }
