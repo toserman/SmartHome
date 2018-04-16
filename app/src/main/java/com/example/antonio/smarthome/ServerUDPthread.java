@@ -119,7 +119,8 @@ public class ServerUDPthread extends Thread {
                         }
 
                         if (udp_data.equals(CHECK_CONNECTION)) {
-                            Log.e(TAG, "UDP == CHECK_CONNECTION:" + udp_data + " strStatus:" + strStatus);
+                            Log.e(TAG, "UDP == CHECK_CONNECTION: " + udp_data +
+                                    " strStatus: " + strStatus);
                             strAsynCommand = CHECK_CONNECTION + ":" + strStatus;
                         }
 
@@ -151,7 +152,7 @@ public class ServerUDPthread extends Thread {
 
     public String CheckDeviceAvailability(String strIpAdrees) {
         String str = "";
-        int pktCount = 2;
+        int pktCount = 2;//2;
         int rcvEchoPkt = 0;
         try {
             Process process = Runtime.getRuntime().exec(
