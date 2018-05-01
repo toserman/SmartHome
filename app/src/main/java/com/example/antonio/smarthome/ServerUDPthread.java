@@ -103,25 +103,18 @@ public class ServerUDPthread extends Thread {
                         updateOutput(output + "\n");//Update TextView in UI
 
                         String strStatus, strAsynCommand;
-                        Log.e(TAG, " Received TestPacket SEND UDP PACKET BACK test_port = "
-                                + Integer.toString(MainActivity.CLIENT_SRV_PORT) + " Destination IP " + strIPaddress);
+                        Log.e(TAG, output);
 
                         String HOME_PC_IP= "192.168.0.102"; //Home PC
                         strStatus = CheckDeviceAvailability(HOME_PC_IP); //Check connection
-
-                        //strStatus = CheckDeviceAvailability(strIPaddress); //Check connection
-                        if (strStatus.equals(udp_data)) {
-                            Log.e(TAG, "EQUALS Connection strStatus:" + strStatus + " Recieved udp_data " + udp_data);
-                            //strAsynCommand = "DO_NOTHING";
-                            strAsynCommand = "PC is already " + udp_data;
-                        } else {
-                            strAsynCommand = udp_data;
-                        }
+                        Log.e(TAG, "Connection strStatus:" + strStatus + " Recieved udp_data " + udp_data);
 
                         if (udp_data.equals(CHECK_CONNECTION)) {
                             Log.e(TAG, "UDP == CHECK_CONNECTION: " + udp_data +
                                     " strStatus: " + strStatus);
                             strAsynCommand = CHECK_CONNECTION + ":" + strStatus;
+                        } else {
+                            strAsynCommand = udp_data;
                         }
 
                         Log.e(TAG, "BEFORE AsynTask : " + strAsynCommand);
