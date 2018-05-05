@@ -126,6 +126,7 @@ public class ServerUDPthread extends Thread {
                         try {
                             //new SendUDPdata("192.168.0.107", test_port, "HELLO SERVER").execute();
                             new SendUDPdata(strIPaddress, MainActivity.CLIENT_SRV_PORT, strAsynCommand).execute();
+                            Log.e(TAG, "Send to client : " + strAsynCommand);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
