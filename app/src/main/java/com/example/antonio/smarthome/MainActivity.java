@@ -10,13 +10,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, MqttCallback {
 
     TextView tview_log;
     Button btn_start, btn_stop, btn_clear_textview;
@@ -49,6 +56,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 super.handleMessage(msg);
             }
         };
+
+
+        try {
+            //MqttClient client = new MqttClient("tcp://192.168.1.7:1883", "AndroidThingSub", new MemoryPersistence());
+           // MqttClient client = new MqttClient("tcp://192.168.0.105:1883", "AndroidThingSub", new MemoryPersistence());
+            MqttClient client = new MqttClient("tcp://test.mosquitto.org:1883", "AndroidThingSub", new MemoryPersistence());
+            client.setCallback(this);
+            client.connect();
+            String topic = "MQTT Examples";
+            Log.e("TAG","MY START MQtt Subscribe:" + topic);
+            tview_log.setText("MY START MQtt Subscribe:" + topic);
+            client.subscribe(topic);
+
+//            MqttMessage message = new MqttMessage("Hello, I am Android Mqtt Client.".getBytes());
+//            message.setQos(1);
+//            message.setRetained(false);
+//
+//            client.publish("messages", message);
+//            Log.e(TAG, "Message published");
+
+
+//                    MQTTClient_message pubmsg = MQTTClient_message_initializer;
+//                    MQTTClient_deliveryToken token;
+//
+//                    MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+//                     pubmsg.payload = PAYLOAD;
+//                    pubmsg.payloadlen = strlen(PAYLOAD);
+//                    pubmsg.qos = QOS;
+//                    pubmsg.retained = 0;
+//                    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
+//                    MqttMessage msg = new MqttMessage();
+//                    msg.setPayload("Hello IoT");
+//                    client.publish(topic,"HELLO IoT",1,true);
+
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
 
      }
 
@@ -130,6 +174,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return ip;
+    }
+
+    @Override
+    public void connectionLost(Throwable cause) {
+        Log.e(TAG, "MY connectionLost....");
+    }
+
+    @Override
+    public void messageArrived(String topic, MqttMessage message) throws Exception {
+        String payload = new String(message.getPayload());
+        Log.e(TAG, "MY " + payload);
+        tview_log.setText("Recieve: " + payload);
+//        switch (payload) {
+//            case "ON":
+//                Log.d(TAG, "LED ON");
+//                ledPin.setValue(true);
+//                break;
+//            case "OFF":
+//                Log.d(TAG, "LED OFF");
+//                ledPin.setValue(false);
+//                break;
+//            default:
+//                Log.d(TAG, "Message not supported!");
+//                break;
+//        }
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken token) {
+        Log.e(TAG, "MY deliveryComplete....");
     }
 
 
